@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Register</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="./style.css">
+	<link rel="icon" href="./favicon.ico">
+</head>
+<body>
+	<div id="app">
+		<div v-if="view === 'adminLogin'">			
+			<h4>Admin Login</h4>
+			<table>
+				<tr>
+					<td>Username: </td>
+					<td><input v-model="adminUser"></td>
+				</tr>
+				<tr>
+					<td>Password: </td>
+					<td><input type="password" v-model="adminPass"></td>
+				</tr>
+			</table>
+			<p v-if="loginErr">Login details don't match. Please try again.</p>
+			<button v-on:click="adminLogin">LOGIN</button>
+			<hr>
+			<h5>Not an event admin?</h5>
+			<button v-on:click="view = 'attendeeCheckin'">Check in here</button>
+		</div>
+		<div v-if="view === 'adminLanding'">
+			<h4>Admin Landing</h4>
+			<h6>Logged in as {{ adminUser }}</h6><button v-on:click="adminLogout">Log out</button><hr>
+			Check-in ID: <input type="text" v-model="checkinID"><br>
+			<button v-on:click="adminCheckin">Start Check In</button><br>
+			<button v-on:click="history">History</button>
+		</div>
+		<div v-if="view === 'history'">
+			<h4>History</h4>
+			<h6>Logged in as {{ adminUser }}.</h6><button v-on:click="adminLogout">Log out</button><hr>
+			<h5>Check in history for {{ checkinID }}</h5>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>User ID</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- check in data -->
+				</tbody>
+			</table>
+		</div>
+		<div v-if="view === 'adminCheckin'">
+			<h4>Check in for {{ checkinID }} is open</h4>
+			<h6>Logged in as {{ adminUser }}</h6><button v-on:click="adminLogout">Log out</button><hr>
+			<button v-on:click="adminEndCheckin">Close Check In</button>
+		</div>
+		<div v-if="view === 'adminDone'">
+			<h4>Check ins for this session of {{ checkinID }}</h4>
+			<h6>Logged in as {{ adminUser }}.</h6><button v-on:click="adminLogout">Log out</button><hr>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>User ID</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- check in session data -->
+				</tbody>
+			</table>
+		</div>
+		<div v-if="view === 'attendeeCheckin'">
+			<h4>Attendee Check In</h4>
+			<table>
+				<tr>
+					<td>Name: </td>
+					<td><input type="text" v-model="attendeeName"></td>
+				</tr>
+				<tr>
+					<td>User ID: </td>
+					<td><input type="text" v-model="attendeeID"></td>
+				</tr>
+				<tr>
+					<td>Check In ID: </td>
+					<td><input type="text" v-model="attendeeCheckinID"></td>
+				</tr>
+			</table>
+			<button v-on:click="attendeeCheckin">Check In</button>
+			<hr>
+			<button v-on:click="view = 'adminLogin'">Return to admin login</button>
+		</div>
+		<div v-if="view === 'attendeeDone'">
+			<p>
+				Thanks for checking in to {{ checkinID }}.
+			</p>
+			<hr>
+			<button v-on:click="view = 'adminLogin'">Return to admin login</button>
+
+		</div>
+		<div style="border: solid 2px blue; margin: 10px; padding: 10px;">
+			<h4>app variables</h4>
+			<pre>
+view:............. {{view}}<br>
+loginErr:......... {{loginErr}}<br>
+adminUser:........ {{adminUser}}<br>
+adminPass:........ {{adminPass}}<br>
+checkinID:........ {{checkinID}}<br>
+attendeeName:..... {{attendeeName}}<br>
+attendeeID:....... {{attendeeID}}<br>
+attendeeCheckinID: {{attendeeCheckinID}}
+			</pre>
+		</div>
+	</div>
+	<script
+	  src="https://code.jquery.com/jquery-3.3.1.min.js"
+	  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	  crossorigin="anonymous"></script>
+	  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+	<script type="text/javascript" src="./script.js"></script>
+</body>
+</html>

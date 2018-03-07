@@ -1,0 +1,17 @@
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#app {
+	padding: 10px;
+	margin: 10px;
+	border: solid 2px black;
+	border-radius: 20px;
+}
+
+button {
+	border-radius: 5px;
+}
