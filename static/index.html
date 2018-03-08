@@ -36,17 +36,24 @@
 		<div v-if="view === 'history'">
 			<h4>History</h4>
 			<h6>Logged in as {{ adminUser }}.</h6><button v-on:click="adminLogout">Log out</button><hr>
+			<button v-on:click="view = 'adminLanding'">Start new check in</button><hr>
 			<h5>Check in history for {{ checkinID }}</h5>
 			<table>
 				<thead>
 					<tr>
 						<th>Name</th>
 						<th>User ID</th>
-						<th>Time</th>
+						<th>Session ID</th>
+						<th>Check-in Time</th>
 					</tr>
 				</thead>
-				<tbody>
-					<!-- check in data -->
+				<tbody v-for="user in checkinHistory">
+					<tr>
+						<td>{{ user.name }}</td>
+						<td>{{ user.id }}</td>
+						<td>{{ user.session }}</td>
+						<td>{{ user.time }}</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -58,16 +65,21 @@
 		<div v-if="view === 'adminDone'">
 			<h4>Check ins for this session of {{ checkinID }}</h4>
 			<h6>Logged in as {{ adminUser }}.</h6><button v-on:click="adminLogout">Log out</button><hr>
+			<button v-on:click="view = 'adminLanding'">Start new check in</button><hr>
 			<table>
 				<thead>
 					<tr>
 						<th>Name</th>
 						<th>User ID</th>
-						<th>Time</th>
+						<th>Check-in Time</th>
 					</tr>
 				</thead>
-				<tbody>
-					<!-- check in session data -->
+				<tbody v-for="user in sessionHistory">
+					<tr>
+						<td>{{ user.name }}</td>
+						<td>{{ user.id }}</td>
+						<td>{{ user.time }}</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -93,13 +105,14 @@
 		</div>
 		<div v-if="view === 'attendeeDone'">
 			<p>
-				Thanks for checking in to {{ checkinID }}.
+				Thanks for checking in to {{ checkinID }}.<br>
+				Please contact the event admin ({{ adminUser }}) for further directions.
 			</p>
 			<hr>
 			<button v-on:click="view = 'adminLogin'">Return to admin login</button>
 
 		</div>
-		<div style="border: solid 2px blue; margin: 10px; padding: 10px;">
+<!-- 		<div style="border: solid 2px blue; margin: 10px; padding: 10px;">
 			<h4>app variables</h4>
 			<pre>
 view:............. {{view}}<br>
@@ -107,11 +120,14 @@ loginErr:......... {{loginErr}}<br>
 adminUser:........ {{adminUser}}<br>
 adminPass:........ {{adminPass}}<br>
 checkinID:........ {{checkinID}}<br>
+sessionID:........ {{sessionID}}<br>
 attendeeName:..... {{attendeeName}}<br>
 attendeeID:....... {{attendeeID}}<br>
-attendeeCheckinID: {{attendeeCheckinID}}
+attendeeCheckinID: {{attendeeCheckinID}}<br>
+checkinHistory:... {{checkinHistory}}<br>
+sessionHistory:... {{sessionHistory}}
 			</pre>
-		</div>
+		</div> -->
 	</div>
 	<script
 	  src="https://code.jquery.com/jquery-3.3.1.min.js"
