@@ -28,7 +28,6 @@ function prepareJSON (checkin) {
   var res = []
   for (var sess in checkins[checkin]) {
     checkins[checkin][sess]['attendees'].forEach((user) => {
-      console.log('user', user)
       res.push({
         name: user.name,
         id: user.id,

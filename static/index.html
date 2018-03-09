@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Register</title>
+	<title>Event Checkin</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="./style.css">
 	<link rel="icon" href="./favicon.ico">
 </head>
 <body>
 	<div id="app">
+		<div v-if="networkErr" class="alert alert-warning" role="alert">
+			<h5>Network Error</h5>
+			<p>Unable to connect to server. Please try again later.</p>
+		</div>
 		<div v-if="view === 'adminLogin'">			
 			<h4>Admin Login</h4>
 			<table>

@@ -10,6 +10,7 @@
 - unauthorized users are redirected to login page
 - remember username of last admin (forget password for security reasons)
 - logout of admin account if logged in
+- detect network errors (server down) and report to user
 
 ## Setup
 
