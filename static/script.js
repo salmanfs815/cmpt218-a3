@@ -8,21 +8,13 @@ var app = new Vue({
     loginErr: false,
     networkErr: false,
 
-    /*adminUser: '',
+    adminUser: '',
     adminPass: '',
     checkinID: '',
     sessionID: '',
     attendeeName: '',
     attendeeID: '',
-    attendeeCheckinID: '',*/
-
-    adminUser: 'salman',
-    adminPass: 'siddiqui',
-    checkinID: 'CMPT218',
-    sessionID: '',
-    attendeeName: 'Bob Smith',
-    attendeeID: '123456789',
-    attendeeCheckinID: 'CMPT218',
+    attendeeCheckinID: '',
 
     checkinHistory: [],
     sessionHistory: []
@@ -36,6 +28,7 @@ var app = new Vue({
       }).then((res) => {
         this.networkErr = false
         if (res.data === true) {
+          this.loginErr = false
           this.adminPass = ''
           this.view = 'adminLanding'
         } else {
@@ -131,7 +124,7 @@ var app = new Vue({
       }).then((res) => {
         this.networkErr = false
         if (res.data === '') {
-          alert('Sorry, check in for '+ this.attendeeCheckinID + ' is currently closed.')
+          alert('Sorry, check in for ' + this.attendeeCheckinID + ' is currently closed.')
         } else {
           this.adminUser = res.data
           this.view = 'attendeeDone'
