@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt')
 const result = require('dotenv').config()
 if (result.error) throw result.error
 
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`)
+mongoose.connect(process.env.DB_URL)
 
 var adminSchema = new mongoose.Schema({
   user: { type: String },
   pass: { type: String }
 })
 var Admin = mongoose.model('admin', adminSchema)
+
 
 function addAdmin (username, password) {
   Admin.find({'user': username}, (err, docs) => {

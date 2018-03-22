@@ -11,8 +11,7 @@
 - remember username of last admin to facilitate future login (forget password for security reasons)
 - logout of admin account if logged in
 - detect network errors (server down) and report to user
-- plaintext passwords are never stored on server or in database
-	- store salted, hashed passwords
+- plaintext passwords are never stored on server or in database (encrypted)
 - can create additional admin accounts	
 
 ## Setup
@@ -21,12 +20,11 @@
 1. `npm install`
 2. create a `.env` file to store environment variables
 	- the following environment variables are required:
+		- PORT is the port number to run the server on
+		- DB_URL is the complete URL for the database: `mongo://<username>:<password>@<hostname>/<database>[?authSource=admin]`
 ```
 PORT=
-DB_HOST=
-DB_NAME=
-DB_USER=
-DB_PASS=
+DB_URL=
 ```
 
 ### Run Server
