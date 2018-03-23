@@ -6,7 +6,7 @@ const path = require('path')
 const result = require('dotenv').config()
 if (result.error) throw result.error
 
-//mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`)
+// mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`)
 mongoose.connect(process.env.DB_URL)
 
 var Schema = mongoose.Schema
@@ -20,22 +20,17 @@ var Admin = mongoose.model('admin', adminSchema)
 var attendeeSchema = new Schema({
   name: String,
   id: String,
-  time: String
+  time: {type: String, default: Date}
 })
 var Attendee = mongoose.model('attendee', attendeeSchema)
 
-var sessionSchema = new Schema({
-  id: Number,
-  admin: String,
-  start: String,
-  end: String,
-  attendees: [attendeeSchema]
-})
-var Session = mongoose.model('session', sessionSchema)
-
 var checkinSchema = new Schema({
-  id: String,
-  sessions: [sessionSchema]
+  checkin: String,
+  session: {type: Number, default: Date.now},
+  admin: String,
+  start: {type: String, default: Date},
+  end: {type: String, default: null},
+  attendees: {type: [attendeeSchema], default: []}
 })
 var Checkin = mongoose.model('checkin', checkinSchema)
 
@@ -43,8 +38,6 @@ var app = express()
 var port = process.env.PORT || 8000
 
 var loggedIn = ''
-var checkinID = ''
-var sessionID = NaN
 
 app.use('/', (req, res, next) => {
   console.log(req.method, 'request:', req.url)
@@ -74,43 +67,39 @@ app.post('/', (req, res) => {
 
 app.post('/logout', (req, res) => {
   loggedIn = ''
-  sessionID = NaN
-  checkinID = ''
-  res.sendStatus(200)
+  Checkin.find({
+    end: null
+  }, (err, docs) => {
+    if (err) {
+      console.log(err)
+      res.sendStatus(503)
+    } else {
+      docs.forEach((doc) => {
+        doc.end = Date()
+      })
+      res.sendStatus(200)
+    }
+  })
 })
 
 app.post('/admin', (req, res) => {
   if (loggedIn === '') {
     res.redirect(401, '/')
   } else {
-    checkinID = req.body.checkinID
-    sessionID = Date.now()
-    var newSession = new Session({
-      id: sessionID,
-      admin: loggedIn,
-      start: Date(),
-      end: null,
-      attendees: []
+    var checkinID = req.body.checkinID
+    var sessionID = Date.now()
+    var newCheckin = new Checkin({
+      checkin: checkinID,
+      session: sessionID,
+      admin: loggedIn
     })
-
-    Checkin.findOne({id: checkinID})
-    .then((doc) => { 
-      if (doc) { 
-        doc.sessions.push(newSession)
-        doc.save((err) => { 
-          if (err) console.log(err)
-          else res.send(sessionID.toString())
-        })
-      } else { 
-        var newCheckin = new Checkin({
-          id: checkinID, 
-          sessions: [newSession]
-        })
-        newCheckin.save((err) => { 
-          if (err) console.log(err)
-          else res.send(sessionID.toString()) 
-        }) 
-      } 
+    newCheckin.save((err) => {
+      if (err) {
+        console.log(err)
+        res.sendStatus(503)
+      } else {
+        res.send(sessionID.toString())
+      }
     })
   }
 })
@@ -119,26 +108,19 @@ app.post('/history', (req, res) => {
   if (loggedIn === '') {
     res.redirect(401, '/')
   } else {
-    checkin = req.body.checkinID
-    // res.json(prepareJSON(checkinID))
     var ret = []
-    Checkin.findOne({id: checkin}, (err, doc) => {
+    Checkin.find({
+      checkin: req.body.checkinID
+    }, (err, docs) => {
       if (err) {
         console.log(err)
-        console.log('ERROR: DB query failed')
-      } else if (doc) {
-        doc.sessions.forEach((session) => {
-          session.attendees.forEach((person) => {
-            ret.push({
-              name: person.name,
-              id: person.id,
-              time: person.time,
-              session: session.id
-            })
-          })
+        res.sendStatus(503)
+      } else {
+        docs.forEach((doc) => {
+          ret = ret.concat(doc.attendees)
         })
+        res.json(ret)
       }
-      res.json(ret)
     })
   }
 })
@@ -147,31 +129,57 @@ app.post('/adminCheckin', (req, res) => {
   if (loggedIn === '') {
     res.redirect(401, '/')
   } else {
-    var checkin = req.body.checkinID
-    var session = req.body.sessionID
-    checkins[checkin][session]['end'] = Date()
-    res.json(checkins[checkin][session]['attendees'])
-    sessionID = NaN
-    checkinID = ''
+    Checkin.findOne({
+      session: req.body.sessionID
+    }, (err, doc) => {
+      if (err) {
+        console.log(err)
+        res.sendStatus(503)
+      } else if (doc) {
+        doc.end = Date()
+        doc.save((err) => {
+          if (err) {
+            console.log(err)
+            res.sendStatus(503)
+          } else {
+            res.json(doc.attendees)
+          }
+        })
+      } else {
+        res.json([])
+      }
+    })
   }
 })
 
 app.post('/attendeeCheckin', (req, res) => {
-  var checkin = req.body.checkin
-  // check if checkin is open
-  if (checkinID === checkin) {
-    var newAttendee = new Attendee({
-      name: req.body.name,
-      id: req.body.id,
-      time: Date()
-    })
-
-    checkins[checkinID][sessionID]['attendees'].push(attendee)
-    // add attendee to checkin
-    res.send(loggedIn)
-  } else {
-    res.send('')
-  }
+  Checkin.findOne({
+    checkin: req.body.checkin,
+    end: null
+  }, (err, doc) => {
+    if (err) {
+      console.log(err)
+      res.sendStatus(503)
+    } else if (doc) {
+      var newAttendee = new Attendee({
+        name: req.body.name,
+        id: req.body.id,
+        time: Date()
+      })
+      doc.attendees.push(newAttendee)
+      doc.save((err) => {
+        if (err) {
+          console.log(err)
+          res.sendStatus(503)
+        } else {
+          res.send(doc.admin)
+        }
+      })
+    } else {
+      console.log('checkin not open for:', req.body.checkin)
+      res.send('')
+    }
+  })
 })
 
 app.listen(port, () => console.log(`Server is listening on port ${port}`))

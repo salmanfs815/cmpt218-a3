@@ -12,7 +12,9 @@
 - logout button to logout of admin account (when logged in)
 - detect network errors (server down) and report to user
 - plaintext passwords are never stored on server or in database (encrypted)
-- can create additional admin accounts	
+- can create additional admin accounts
+- multiple admins can be logged in simultaneously
+- multiple checkins can be open simultaneously
 
 ## Setup
 
