@@ -9,7 +9,7 @@
 - custom favicon
 - unauthorized users are redirected to login page
 - remember username of last admin to facilitate future login (forget password for security reasons)
-- logout of admin account if logged in
+- logout button to logout of admin account (when logged in)
 - detect network errors (server down) and report to user
 - plaintext passwords are never stored on server or in database (encrypted)
 - can create additional admin accounts	
